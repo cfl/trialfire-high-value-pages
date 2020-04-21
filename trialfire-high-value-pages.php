@@ -10,17 +10,17 @@
 
 /**
  * Add a WordPress REST API endpoint at the following URL:
- * 		https://www.yoursite.com/wp-json/trialfire-high-value-pages/v1/list/
+ *      https://www.yoursite.com/wp-json/trialfire-high-value-pages/v1/list/
  */
 function trialfire_hvp_rest_api_init() {
-	register_rest_route( 
-		'trialfire-high-value-pages/v1', 
-		'/list/', 
-		array(
-    		'methods' => 'GET',
-    		'callback' => 'trialfire_hvp_get_posts',
-  		) 
-	);
+    register_rest_route( 
+        'trialfire-high-value-pages/v1', 
+        '/list/', 
+        array(
+            'methods' => 'GET',
+            'callback' => 'trialfire_hvp_get_posts',
+        ) 
+    );
 }
 add_action( 'rest_api_init', 'trialfire_hvp_rest_api_init' );
 
@@ -29,28 +29,29 @@ add_action( 'rest_api_init', 'trialfire_hvp_rest_api_init' );
  * requiring some action to be taken on them for Trialfire-identified Persons.
  */
 function trialfire_hvp_get_posts() {
-	$arr_posts = array();
+    $arr_posts = array();
 
-	$arr_post_ids = get_posts( 
-		array(
-			'post_type' 	=> array('post', 'page'),
-			'post_status' 	=> 'publish', 
-			'fields' 		=> 'ids',
-			'meta_key'     	=> 'is_trialfire_high_value_page',
-    		'meta_value'   	=> '1',
-			'numberposts' 	=> -1,
-		) 
-	);
+    $arr_post_ids = get_posts( 
+        array(
+            'post_type'     => array('post', 'page'),
+            'post_status'   => 'publish', 
+            'fields'        => 'ids',
+            'meta_key'      => 'is_trialfire_high_value_page',
+            'meta_value'    => '1',
+            'numberposts'   => -1,
+        ) 
+    );
 
-	foreach ( $arr_post_ids as $post_id ) {
-		$obj_post = new stdClass;
-		$obj_post->post_id = $post_id;
-		$obj_post->url = get_permalink($post_id);
+    foreach ( $arr_post_ids as $post_id ) {
+        $obj_post = new stdClass;
+        $obj_post->post_id = $post_id;
+        $obj_post->title = esc_js(get_the_title($post_id));
+        $obj_post->url = get_permalink($post_id);
 
-		$arr_posts[] = $obj_post;
-	}
+        $arr_posts[] = $obj_post;
+    }
  
-  	return $arr_posts;
+    return $arr_posts;
 }
 
 /**
@@ -58,7 +59,7 @@ function trialfire_hvp_get_posts() {
  * post types.
  */
 function trialfire_hvp_metabox_add() {
-	add_meta_box( 'add-trialfire-hvp-metabox', 'Trialfire - High Value Page', 'trialfire_hvp_metabox_callback', 'post', 'side', 'low' );
+    add_meta_box( 'add-trialfire-hvp-metabox', 'Trialfire - High Value Page', 'trialfire_hvp_metabox_callback', 'post', 'side', 'low' );
     add_meta_box( 'add-trialfire-hvp-metabox', 'Trialfire - High Value Page', 'trialfire_hvp_metabox_callback', 'page', 'side', 'low' );
 }
 add_action( 'add_meta_boxes', 'trialfire_hvp_metabox_add' );
@@ -74,7 +75,7 @@ function trialfire_hvp_metabox_callback( $post ) {
 
     $str_checked = '';
     if ( $current_value_checked == '1' ) {
-    	$str_checked = 'checked="checked"';
+        $str_checked = 'checked="checked"';
     }
     ?>
     <p>
